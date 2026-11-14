@@ -33,11 +33,13 @@ and the local densities at all primes, suitably normalized, are the local factor
 genus of positive definite lattices. The normalization here is Siegel's: the congruence is
 entrywise and there is no extra factor `1 / 2`. Consequently `α_p(A) → 2` as `p → ∞` (see the
 closed values below), so the raw product `∏_p α_p(A)⁻¹` diverges to `0`, and the factor that enters
-a mass formula is `α_p(A) / 2`. Other sources (for example Kitaoka and Katsurada, or Cho) include a
-factor `1 / 2`, which halves these values. This file defines the count inside the limit,
-`Matrix.localDensityCount A r`, shows that it only depends on `A` up to a change of basis, proves
-that it stabilizes at every prime, defines the local density `Matrix.localDensity A` as the limit,
-and evaluates it at a prime `p` not dividing `2 det A`.
+a mass formula is `α_p(A) / 2`. The count is of entrywise bilinear isometries, which at `p = 2` is
+not the count of isometries of the half-norm quadratic form `x ↦ xᵀ A x / 2`: for the hyperbolic
+plane the bilinear count gives density `4` and the half-norm count gives `1`
+(`Matrix.localDensity_hyperbolicPlane_two` in `LocalDensity/Dyadic.lean`). This file defines the
+count inside the limit, `Matrix.localDensityCount A r`, shows that it only depends on `A` up to a
+change of basis, proves that it stabilizes at every prime, defines the local density
+`Matrix.localDensity A` as the limit, and evaluates it at a prime `p` not dividing `2 det A`.
 
 **Stabilization.** Let `A` be symmetric with `2 det A ∣ pᵉ`, for instance `e = v_p(2 det A)`.
 For every `r > 2 e` the count at level `r + 1` is `p ^ (n.choose 2)` times the count at level `r`,
@@ -546,7 +548,8 @@ private theorem localDensityCount_div_pow_succ_of_dvd {A : Matrix n n ℤ_[p]} (
 normalized counts `#{X ∈ Mₙ(ℤ/pʳ) : Xᵀ A X = A} / p ^ (r * n.choose 2)`. For symmetric `A` with
 nonzero determinant the normalized counts are constant from `r = 2 v_p(2 det A) + 1` on
 (`Matrix.localDensityCount_div_pow_of_det_ne_zero`), so the limit exists; for other `A` this is
-a junk value. This is Siegel's normalization, without the factor `1 / 2` of some sources. -/
+a junk value. This is Siegel's normalization: entrywise bilinear congruences and no extra factor
+`1 / 2`; the dyadic case is discussed in `LocalDensity/Dyadic.lean`. -/
 noncomputable def localDensity (A : Matrix n n ℤ_[p]) : ℚ :=
   limUnder atTop fun r => (A.localDensityCount r : ℚ) / (p : ℚ) ^ (r * (Fintype.card n).choose 2)
 
