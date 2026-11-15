@@ -39,6 +39,9 @@ def expression(source, *, attempt=1, picker_attempt="1", target='"ubuntu-24.04"'
                          "contains": lambda values, value: value in values, "format": lambda s, *args: s.format(*args), "startsWith": lambda s, p: s.startswith(p),
                          "vars": SimpleNamespace(FLEET_CI_ENABLED="true", PICKER_GITHUB_FALLBACK="true" if hosted_picker else "", STAGING_RUNS_ON=staging_target)})
 
+PRIORITY_NAMESPACE = ["nscloud-ubuntu-24.04-amd64-8x16-with-features;job.priority=1",
+                      "namespace-features:container.privileged=true;github.run-id=42"]
+
 
 @unittest.skipUnless(MODERN, "project uses the standard GitHub-only picker")
 class PickerWorkflow(unittest.TestCase):
@@ -58,10 +61,10 @@ class PickerWorkflow(unittest.TestCase):
             self.assertEqual(concurrency["queue"], "max")
             self.assertFalse(concurrency["cancel-in-progress"])
 
-    def test_hosted_maintenance_obeys_bulk_cap_and_staging_keeps_reserved_slots(self):
+    def test_maintenance_skips_shared_slots_and_staging_keeps_reserved_slots(self):
         group = BUILD["jobs"]["sandboxed-build"]["concurrency"]["group"]
-        self.assertTrue(expression(group, maintenance=True).startswith("tauceti-hosted-bulk-"))
-        self.assertTrue(expression(group, author_type="Bot", head_ref="bump-mathlib/abc").startswith("tauceti-hosted-bulk-"))
+        self.assertEqual(expression(group, maintenance=True), "unlimited-sandboxed-build-42")
+        self.assertEqual(expression(group, author_type="Bot", head_ref="bump-mathlib/abc"), "unlimited-sandboxed-build-42")
         self.assertFalse(expression(group, event="repository_dispatch", action="tauceti-bors-staging",
                                     staging_target='["nscloud-ubuntu-24.04-amd64-16x32-with-features"]')
                          .startswith("tauceti-hosted-bulk-"))
@@ -120,7 +123,7 @@ class PickerWorkflow(unittest.TestCase):
 
     def test_maintenance_build_capacity_is_limited_to_explicit_or_same_repo_bot_work(self):
         source = BUILD["jobs"]["sandboxed-build"]["runs-on"]
-        priority_build = "ubuntu-24.04"
+        priority_build = PRIORITY_NAMESPACE
         self.assertEqual(expression(source, maintenance=True), priority_build)
         for branch in ("bump-mathlib/abc", "lint-repair/main"):
             self.assertEqual(expression(source, author_type="Bot", head_ref=branch), priority_build)
@@ -187,9 +190,9 @@ class PickerWorkflow(unittest.TestCase):
             self.assertIn("tauceti-fleet-queue-control", target)
             self.assertIn("fleet-74773fc7f54d4877add11d80113fe340", target)
 
-    def test_maintenance_build_uses_github_on_every_attempt(self):
+    def test_maintenance_build_uses_priority_namespace_on_every_attempt(self):
         source = BUILD["jobs"]["sandboxed-build"]["runs-on"]
-        expected = "ubuntu-24.04"
+        expected = PRIORITY_NAMESPACE
         self.assertEqual(expression(source, maintenance=True), expected)
         self.assertEqual(expression(source, maintenance=True, hosted_picker=True, attempt=2), expected)
 
