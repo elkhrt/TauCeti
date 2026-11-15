@@ -106,6 +106,12 @@ private theorem isRestricted_min_of_one_lt {f g : MvPowerSeries σ R} {ρ ρ' : 
   exact ⟨isRestricted_of_le hf h0 fun _ ↦ min_le_left _ _,
     isRestricted_of_le hg h0 fun _ ↦ min_le_right _ _⟩
 
+end ConstantRadius
+
+section NormBound
+
+variable {σ R : Type*} [SeminormedRing R]
+
 /-- **Geometric decay gives a radius.** The decay `‖aᵥ‖ ≤ q ^ ⌊|ν| / c⌋` of the coefficients of a
 series, for `0 < q < 1` and `c > 0`, gives a radius `ρ > 1` and a constant `C` with
 `‖aᵥ‖ ≤ C ρ^{-|ν|}`. -/
@@ -129,7 +135,7 @@ theorem exists_norm_coeff_le_mul_inv_pow_of_le_pow {q : ℝ} (hq0 : 0 < q) (hq1 
         rw [hρc, inv_pow, pow_succ]
         field_simp
 
-end ConstantRadius
+end NormBound
 
 section Defs
 
