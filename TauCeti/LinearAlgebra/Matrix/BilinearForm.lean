@@ -44,9 +44,10 @@ Gram determinants transform by the square of the coordinate-map determinant, and
 basis does not change them. Consequently, the Gram determinants of equivalent bilinear forms, in
 any finite bases, differ by the square of a unit and their product is a square, without symmetry
 or nondegeneracy assumptions. A linear map that carries one symmetric form to another only modulo
-`a * r`, with `2 ∣ r`, still changes the Gram determinant by a square times a factor in
-`1 + 2rR`, provided the source form has a Gram matrix `G` with a partner `H` satisfying
-`G * H = a • 1` for a non-zero-divisor `a` and a parity condition holds.
+`a * r`, with `2 ∣ r`, still relates the two Gram determinants: a square times the determinant
+of the target form equals a factor in `1 + 2rR` times the determinant of the source form,
+provided the source form has a Gram matrix `G` with a partner `H` satisfying `G * H = a • 1` for a
+non-zero-divisor `a` and a parity condition holds.
 
 Pullback along a rectangular matrix preserves alternation over a commutative semiring. Over a
 commutative ring, alternation is equivalent to skew-symmetry together with a zero diagonal;
